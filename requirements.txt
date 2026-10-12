@@ -1,0 +1,9 @@
+# HealthBridge — Community Well-Being & Lifestyle Tracker
+# Requirements for Web Application & Automated Tests
+
+Flask>=3.0.0
+Werkzeug>=3.0.0
+python-dotenv>=1.0.0
+
+# Optional testing / export dependencies:
+pytest>=7.0.0

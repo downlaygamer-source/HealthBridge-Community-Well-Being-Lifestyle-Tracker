@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Sign Up · HealthBridge{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8">
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+
+    <!-- Left Feature Callout -->
+    <div class="md:col-span-5 space-y-5 hidden md:block">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold">
+        <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+        <span>COMMUNITY MEMBERSHIP</span>
+      </div>
+
+      <h2 class="text-2xl font-extrabold text-white tracking-tight leading-tight">
+        Start your daily lifestyle reflection journey.
+      </h2>
+
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Set your baseline lifestyle targets for sleep, hydration, and physical movement. Receive transparent, explainable feedback with zero commercial advertisements or paywalls.
+      </p>
+
+      <div class="space-y-3 pt-2">
+        <div class="flex items-center gap-2 text-xs text-slate-300">
+          <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+          <span>100% Free &amp; Community-Oriented</span>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-slate-300">
+          <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+          <span>Local SQLite Privacy Preserved</span>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-slate-300">
+          <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+          <span>Instant Sliding-Window Trend Analysis</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Signup Card -->
+    <div class="md:col-span-7 bg-surface-850 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 mb-5 border-b border-slate-800">
+        <div>
+          <h1 class="text-xl font-bold text-white tracking-tight">Create an Account</h1>
+          <p class="text-xs text-slate-400 mt-0.5">Join your community wellness circle</p>
+        </div>
+        <div class="w-9 h-9 rounded-xl bg-brand-500/10 text-brand-400 border border-brand-500/20 flex items-center justify-center">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+        </div>
+      </div>
+
+      <form method="post" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
+          <input name="full_name" type="text" placeholder="e.g. Maya Sen" required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500 transition">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
+          <input name="email" type="email" placeholder="maya@example.com" required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500 transition">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+          <input name="password" type="password" placeholder="At least 6 characters" required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500 transition">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Sleep Target (hrs)</label>
+            <input name="sleep_target" type="number" step="0.5" value="8.0" min="4" max="14" required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500 transition">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Activity Target (mins)</label>
+            <input name="activity_target" type="number" value="30" min="5" max="180" required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500 transition">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white font-semibold text-sm shadow-lg shadow-brand-500/20 transition flex items-center justify-center gap-2">
+          <span>Create Account</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </form>
+
+      <div class="mt-5 pt-4 border-t border-slate-800 text-center text-xs text-slate-400">
+        Already have an account? <a href="{{ url_for('login') }}" class="text-brand-400 hover:underline font-semibold">Sign in here</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

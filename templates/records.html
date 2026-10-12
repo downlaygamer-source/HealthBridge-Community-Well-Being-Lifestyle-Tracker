@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% block title %}Daily Records · HealthBridge{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header Row -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+    <div>
+      <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20 text-xs font-semibold mb-1">
+        <i data-lucide="database" class="w-3.5 h-3.5"></i>
+        <span>SELF-REPORTED LOGS</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        Daily Wellness Records
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-400 mt-0.5">
+        Manage historical entries. Every submission is rigorously validated by OOP domain rules.
+      </p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <a href="{{ url_for('validation_lab') }}" class="px-3.5 py-2 rounded-xl bg-surface-800 hover:bg-surface-700 border border-slate-700 text-xs text-accent-400 font-medium flex items-center gap-1.5 transition">
+        <i data-lucide="flask-conical" class="w-3.5 h-3.5"></i>
+        <span>Validation Lab</span>
+      </a>
+
+      <form method="post" action="{{ url_for('seed_demo_records') }}" class="inline" onsubmit="return confirm('Reset and restore 14-day sample records?');">
+        <button type="submit" class="px-3.5 py-2 rounded-xl bg-surface-800 hover:bg-surface-700 border border-slate-700 text-xs text-slate-300 hover:text-white font-medium flex items-center gap-1.5 transition">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          <span>Reset 14-Day Data</span>
+        </button>
+      </form>
+
+      <button data-modal-open="addRecordModal" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-md shadow-brand-500/20 flex items-center gap-1.5 transition">
+        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+        <span>Add Entry</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Manager / Admin Member Selector -->
+  {% if managed_members and managed_members|length > 1 %}
+  <div class="p-3.5 rounded-2xl bg-surface-850 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+    <div class="flex items-center gap-2 text-slate-300 font-medium">
+      <i data-lucide="users" class="w-4 h-4 text-purple-400"></i>
+      <span>Authorized Member Scope:</span>
+      <span class="text-white font-bold">{{ target_user.full_name if target_user else g.user.full_name }}</span>
+      {% if is_managing_other %}
+        <span class="px-2 py-0.5 rounded text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30">Managed Account</span>
+      {% endif %}
+    </div>
+    <form method="get" action="{{ url_for('records') }}" class="flex items-center gap-2">
+      <label class="text-slate-400 text-xs">Select Member:</label>
+      <select name="member_id" onchange="this.form.submit()" class="bg-surface-700 border border-slate-600 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500">
+        {% for mm in managed_members %}
+          <option value="{{ mm.id }}" {% if target_user and target_user.id == mm.id %}selected{% endif %}>
+            {{ mm.full_name }} ({{ mm.role }})
+          </option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+  {% endif %}
+
+  <!-- Zero-Tolerance Domain Invariants Strip -->
+  <div class="p-4 rounded-2xl bg-surface-850 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+    <div class="flex items-center gap-2 text-brand-400 font-bold">
+      <i data-lucide="shield-check" class="w-4 h-4"></i>
+      <span>Zero-Tolerance Validation Logic:</span>
+    </div>
+    <div class="flex flex-wrap items-center gap-3 text-slate-300">
+      <span class="flex items-center gap-1"><i data-lucide="check" class="w-3 h-3 text-emerald-400"></i> Sleep: 0.0–24.0h</span>
+      <span class="flex items-center gap-1"><i data-lucide="check" class="w-3 h-3 text-emerald-400"></i> Activity: &ge; 0 mins</span>
+      <span class="flex items-center gap-1"><i data-lucide="check" class="w-3 h-3 text-emerald-400"></i> Water: &gt; 0.0 L</span>
+      <span class="flex items-center gap-1"><i data-lucide="check" class="w-3 h-3 text-emerald-400"></i> Date: 1 record / day</span>
+      <span class="flex items-center gap-1"><i data-lucide="check" class="w-3 h-3 text-emerald-400"></i> Scale: Mood &amp; Stress 1–5</span>
+    </div>
+  </div>
+
+  <!-- Records Table Card -->
+  <div class="bg-surface-850 border border-slate-800 rounded-3xl p-5 shadow-xl">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+      <div>
+        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Entries Archive</span>
+        <h2 class="text-base font-bold text-white">Logged History ({{ records|length }} Total Records)</h2>
+      </div>
+    </div>
+
+    {% if records %}
+    <div class="overflow-x-auto">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Sleep</th>
+            <th>Activity</th>
+            <th>Hydration</th>
+            <th>Mood (1–5)</th>
+            <th>Stress (1–5)</th>
+            <th>Notes</th>
+            <th>Composite Score</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in records %}
+          <tr>
+            <td>
+              <strong class="font-mono text-xs text-white">{{ r.record_date }}</strong>
+            </td>
+            <td>
+              <span class="text-indigo-300 font-medium">{{ '%.1f'|format(r.sleep_hours) }} hrs</span>
+            </td>
+            <td>
+              <span class="text-emerald-300 font-medium">{{ r.activity_minutes }} mins</span>
+            </td>
+            <td>
+              <span class="text-cyan-300 font-medium">{{ '%.1f'|format(r.water_litres) }} L</span>
+            </td>
+            <td>
+              {% if r.mood_rating %}
+                <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                  {{ r.mood_rating }} / 5
+                </span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if r.stress_level %}
+                <span class="px-2 py-0.5 rounded text-[10px] font-semibold {% if r.stress_level <= 2 %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% elif r.stress_level == 3 %}bg-amber-500/10 text-amber-400 border border-amber-500/20{% else %}bg-rose-500/10 text-rose-400 border border-rose-500/20{% endif %}">
+                  {{ r.stress_level }} / 5
+                </span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              <span class="text-xs text-slate-400 truncate max-w-[180px] inline-block">
+                {{ r.notes or '—' }}
+              </span>
+            </td>
+            <td>
+              {% set s = score_map.get(r.record_date, 0) %}
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold {% if s >= 75 %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% elif s >= 50 %}bg-amber-500/10 text-amber-400 border border-amber-500/20{% else %}bg-rose-500/10 text-rose-400 border border-rose-500/20{% endif %}">
+                {{ '%.1f'|format(s) }}
+              </span>
+            </td>
+            <td class="text-right">
+              <form method="post" action="{{ url_for('delete_record', record_id=r.id) }}" class="inline" onsubmit="return confirm('Delete entry for {{ r.record_date }}?');">
+                <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 transition" title="Delete record">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-12">
+      <div class="w-12 h-12 rounded-2xl bg-surface-700 flex items-center justify-center mx-auto mb-3 text-slate-400">
+        <i data-lucide="calendar-x" class="w-6 h-6"></i>
+      </div>
+      <p class="text-sm text-slate-400 mb-4">No wellness records found in your database.</p>
+      <button data-modal-open="addRecordModal" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-md transition">
+        ＋ Add Your First Record
+      </button>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

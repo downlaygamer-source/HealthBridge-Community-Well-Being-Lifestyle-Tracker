@@ -1,0 +1,39 @@
+# HealthBridge — Git Ignore
+# ========================================
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Instance Database & Exports
+instance/*.db
+instance/*.sqlite
+exports/*.json
+exports/*.csv
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.tmp
+*.bak
+.pytest_cache/

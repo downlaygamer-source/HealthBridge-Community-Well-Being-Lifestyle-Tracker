@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard · HealthBridge{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Welcome Hero Row -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+    <div>
+      <div class="flex items-center gap-2">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          Welcome back, {{ g.user['full_name'].split()[0] }} <span class="text-xl">👋</span>
+        </h1>
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-500/10 text-brand-400 border border-brand-500/20">
+          {{ g.user['username'] }}
+        </span>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-400 mt-1">
+        Community lifestyle indicators, rolling 3-day moving averages, and rule-based trend signals.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2.5">
+      <a href="{{ url_for('reports') }}" class="px-3.5 py-2 rounded-xl bg-surface-800 hover:bg-surface-700 border border-slate-700 text-xs font-medium text-slate-300 hover:text-white flex items-center gap-1.5 transition">
+        <i data-lucide="file-text" class="w-4 h-4 text-accent-400"></i>
+        <span>Weekly Report</span>
+      </a>
+      <button data-modal-open="addRecordModal" class="px-4 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white text-xs font-semibold shadow-lg shadow-brand-500/20 flex items-center gap-1.5 transition">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        <span>Log Wellness Day</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Non-Medical Disclaimer Banner -->
+  <div class="p-3.5 rounded-2xl bg-amber-950/20 border border-amber-500/30 text-amber-200/90 text-xs flex items-start gap-3">
+    <div class="p-1.5 rounded-lg bg-amber-500/20 text-amber-400 flex-shrink-0 mt-0.5">
+      <i data-lucide="info" class="w-4 h-4"></i>
+    </div>
+    <div class="leading-relaxed">
+      <strong class="text-amber-300 font-semibold">Non-Diagnostic Notice:</strong>
+      HealthBridge is an educational community tracker designed for lifestyle reflection. It does not evaluate clinical pathology, diagnose illness, or prescribe therapeutic regimens. Consult licensed healthcare practitioners for medical concerns.
+    </div>
+  </div>
+
+  <!-- Primary KPI Tiles Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+
+    <!-- Composite Wellness Score -->
+    <div class="p-4 rounded-2xl bg-surface-850 border border-slate-800 shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-brand-500/40 transition">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold text-slate-400">Composite Wellness Score</span>
+        <div class="p-1.5 rounded-lg bg-brand-500/10 text-brand-400">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+        </div>
+      </div>
+      <div class="my-3">
+        <div class="text-3xl font-extrabold text-white tracking-tight">
+          {{ '%.1f'|format(metrics.overall_score) }}
+          <span class="text-xs font-normal text-slate-500">/ 100</span>
+        </div>
+      </div>
+      <div>
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold {% if metrics.score_class == 'success' %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% elif metrics.score_class == 'warning' %}bg-amber-500/10 text-amber-400 border border-amber-500/20{% else %}bg-rose-500/10 text-rose-400 border border-rose-500/20{% endif %}">
+          {{ metrics.score_band }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Sleep Tile -->
+    <div class="p-4 rounded-2xl bg-surface-850 border border-slate-800 shadow-lg flex flex-col justify-between group hover:border-indigo-500/40 transition">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold text-slate-400">7-Day Avg Sleep</span>
+        <div class="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400">
+          <i data-lucide="moon" class="w-4 h-4"></i>
+        </div>
+      </div>
+      <div class="my-3">
+        <div class="text-3xl font-extrabold text-white tracking-tight">
+          {{ '%.1f'|format(metrics.averages.sleep) }}
+          <span class="text-xs font-normal text-slate-500">hrs/day</span>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-400 flex items-center gap-1">
+        <span>Target:</span>
+        <strong class="text-indigo-300 font-semibold">{{ '%.1f'|format(metrics.scoring_config.sleep_target) }} hrs</strong>
+      </div>
+    </div>
+
+    <!-- Activity Tile -->
+    <div class="p-4 rounded-2xl bg-surface-850 border border-slate-800 shadow-lg flex flex-col justify-between group hover:border-emerald-500/40 transition">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold text-slate-400">7-Day Avg Activity</span>
+        <div class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
+          <i data-lucide="flame" class="w-4 h-4"></i>
+        </div>
+      </div>
+      <div class="my-3">
+        <div class="text-3xl font-extrabold text-white tracking-tight">
+          {{ '%.0f'|format(metrics.averages.activity) }}
+          <span class="text-xs font-normal text-slate-500">mins/day</span>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-400 flex items-center gap-1">
+        <span>Target:</span>
+        <strong class="text-emerald-300 font-semibold">{{ metrics.scoring_config.activity_target }} mins</strong>
+      </div>
+    </div>
+
+    <!-- Hydration Tile -->
+    <div class="p-4 rounded-2xl bg-surface-850 border border-slate-800 shadow-lg flex flex-col justify-between group hover:border-cyan-500/40 transition">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold text-slate-400">7-Day Avg Water</span>
+        <div class="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400">
+          <i data-lucide="droplet" class="w-4 h-4"></i>
+        </div>
+      </div>
+      <div class="my-3">
+        <div class="text-3xl font-extrabold text-white tracking-tight">
+          {{ '%.1f'|format(metrics.averages.water) }}
+          <span class="text-xs font-normal text-slate-500">L/day</span>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-400 flex items-center gap-1">
+        <span>Target:</span>
+        <strong class="text-cyan-300 font-semibold">{{ '%.1f'|format(metrics.scoring_config.water_target) }} L</strong>
+      </div>
+    </div>
+
+    <!-- Mood & Stress Tile -->
+    <div class="p-4 rounded-2xl bg-surface-850 border border-slate-800 shadow-lg flex flex-col justify-between group hover:border-pink-500/40 transition">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold text-slate-400">Mood &amp; Stress</span>
+        <div class="p-1.5 rounded-lg bg-pink-500/10 text-pink-400">
+          <i data-lucide="smile" class="w-4 h-4"></i>
+        </div>
+      </div>
+      <div class="my-3">
+        <div class="text-3xl font-extrabold text-white tracking-tight">
+          {{ '%.1f'|format(metrics.averages.mood) }}
+          <span class="text-xs font-normal text-slate-500">/ 5 mood</span>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-400 flex items-center gap-1">
+        <span>Stress Index:</span>
+        <strong class="text-pink-300 font-semibold">{{ '%.1f'|format(metrics.averages.stress) }} / 5</strong>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Middle Section: Chart & Intelligence Signals -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- 7-Day Score Progression Chart (Left 7 Cols) -->
+    <div class="lg:col-span-7 bg-surface-850 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Algorithmic Smoothing</span>
+          <h2 class="text-base font-bold text-white">Score Progression &amp; 3-Day Moving Average</h2>
+        </div>
+        <a href="{{ url_for('analytics') }}" class="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1 font-medium transition">
+          <span>All Charts</span>
+          <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+        </a>
+      </div>
+      <div class="flex-1 mt-4 min-h-[280px]">
+        <canvas id="dashboardTrendChart" data-series='{{ metrics.chart_data|tojson }}'></canvas>
+      </div>
+    </div>
+
+    <!-- Intelligence & Signals (Right 5 Cols) -->
+    <div class="lg:col-span-5 space-y-4">
+
+      <!-- Priority Action Focus Card -->
+      <div class="bg-surface-850 border border-slate-800 rounded-2xl p-5 shadow-lg">
+        <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800">
+          <span class="text-[10px] uppercase font-bold text-accent-400 tracking-wider">Priority Lifestyle Focus</span>
+          <a href="{{ url_for('intelligence') }}" class="text-[11px] text-slate-400 hover:text-white transition">Engine Details →</a>
+        </div>
+
+        {% if metrics.recommendations %}
+          {% set top_rec = metrics.recommendations[0] %}
+          <div class="p-3.5 rounded-xl bg-surface-800 border border-slate-700/70 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-brand-400">{{ top_rec.indicator|replace('_', ' ')|capitalize }}</span>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                Priority {{ top_rec.priority }}
+              </span>
+            </div>
+            <p class="text-xs text-slate-200 leading-relaxed font-medium">
+              {{ top_rec.suggestion }}
+            </p>
+            <div class="text-[11px] text-slate-400 pt-1 border-t border-slate-700/50">
+              <strong class="text-slate-300">Why:</strong> {{ top_rec.reason }}
+            </div>
+          </div>
+        {% else %}
+          <div class="p-4 rounded-xl bg-brand-950/20 border border-brand-500/20 text-xs text-brand-300">
+            🎉 Outstanding! All tracked indicators currently meet or exceed configured targets.
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Active Rule-Based Trend Signals -->
+      <div class="bg-surface-850 border border-slate-800 rounded-2xl p-5 shadow-lg">
+        <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800">
+          <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Sliding-Window Signals</span>
+          <span class="text-[10px] text-slate-500">3-Day Window Delta</span>
+        </div>
+        <div class="space-y-2">
+          {% for ind, tinfo in metrics.trends.items() %}
+            <div class="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-slate-800/40 transition text-xs">
+              <span class="font-medium text-slate-300">{{ ind|replace('_', ' ')|capitalize }}</span>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold {% if 'improvement' in tinfo.classification %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% elif 'decline' in tinfo.classification %}bg-rose-500/10 text-rose-400 border border-rose-500/20{% elif 'sudden' in tinfo.classification %}bg-amber-500/10 text-amber-400 border border-amber-500/20{% else %}bg-slate-700/50 text-slate-300 border border-slate-600/50{% endif %}">
+                {{ tinfo.classification|title }}
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Recent Daily Records Section -->
+  <div class="bg-surface-850 border border-slate-800 rounded-2xl p-5 shadow-lg">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800 mb-4">
+      <div>
+        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Daily Logs</span>
+        <h2 class="text-base font-bold text-white">Recent Self-Reported Wellness Records</h2>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="{{ url_for('records') }}" class="px-3 py-1.5 rounded-lg bg-surface-800 hover:bg-surface-700 border border-slate-700 text-xs text-slate-300 hover:text-white transition">
+          View All {{ metrics.total_records }} Records →
+        </a>
+        <button data-modal-open="addRecordModal" class="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-sm transition">
+          ＋ Add Log
+        </button>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Sleep</th>
+            <th>Activity</th>
+            <th>Hydration</th>
+            <th>Mood</th>
+            <th>Stress</th>
+            <th>Daily Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in recent_records %}
+          <tr>
+            <td><strong class="font-mono text-xs text-white">{{ r.record_date }}</strong></td>
+            <td><span class="text-indigo-300 font-medium">{{ '%.1f'|format(r.sleep_hours) }} hrs</span></td>
+            <td><span class="text-emerald-300 font-medium">{{ r.activity_minutes }} mins</span></td>
+            <td><span class="text-cyan-300 font-medium">{{ '%.1f'|format(r.water_litres) }} L</span></td>
+            <td>
+              {% if r.mood_rating %}
+                <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                  {{ r.mood_rating }} / 5
+                </span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if r.stress_level %}
+                <span class="px-2 py-0.5 rounded text-[10px] font-semibold {% if r.stress_level <= 2 %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% elif r.stress_level == 3 %}bg-amber-500/10 text-amber-400 border border-amber-500/20{% else %}bg-rose-500/10 text-rose-400 border border-rose-500/20{% endif %}">
+                  {{ r.stress_level }} / 5
+                </span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% set s = score_map.get(r.record_date, 0) %}
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold {% if s >= 75 %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% elif s >= 50 %}bg-amber-500/10 text-amber-400 border border-amber-500/20{% else %}bg-rose-500/10 text-rose-400 border border-rose-500/20{% endif %}">
+                {{ '%.1f'|format(s) }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

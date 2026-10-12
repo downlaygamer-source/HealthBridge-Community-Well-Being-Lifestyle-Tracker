@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% block title %}Health Intelligence · HealthBridge{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+    <div>
+      <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20 text-xs font-semibold mb-1">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+        <span>EXPLAINABLE INTELLIGENCE</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        Algorithmic Health Intelligence
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-400 mt-0.5">
+        Transparent, rule-based algorithms. Every score component and trend citation is mathematically explainable.
+      </p>
+    </div>
+
+    <a href="{{ url_for('settings') }}" class="px-3.5 py-2 rounded-xl bg-surface-800 hover:bg-surface-700 border border-slate-700 text-xs text-slate-300 hover:text-white font-medium flex items-center gap-1.5 transition">
+      <i data-lucide="sliders" class="w-3.5 h-3.5 text-accent-400"></i>
+      <span>Adjust Targets &amp; Weights</span>
+    </a>
+  </div>
+
+  <!-- Composite Score Breakdown Hero Panel -->
+  <div class="p-6 rounded-3xl bg-surface-850 border border-slate-800 shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+
+    <!-- Left: Score Badge Gauge -->
+    <div class="lg:col-span-4 flex flex-col items-center justify-center p-6 rounded-2xl bg-surface-800/60 border border-slate-700/60 text-center">
+      <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Composite Wellness Index</span>
+      <div class="text-6xl font-black text-brand-400 my-2 tracking-tight">
+        {{ '%.0f'|format(metrics.overall_score) }}
+        <span class="text-lg font-normal text-slate-500">/100</span>
+      </div>
+      <span class="px-3.5 py-1 rounded-full text-xs font-semibold {% if metrics.score_class == 'success' %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% elif metrics.score_class == 'warning' %}bg-amber-500/10 text-amber-400 border border-amber-500/20{% else %}bg-rose-500/10 text-rose-400 border border-rose-500/20{% endif %}">
+        {{ metrics.score_band }}
+      </span>
+      <p class="text-[11px] text-slate-400 mt-3 max-w-xs">
+        Calculated from 7-day normalized indicators with mood bonuses and stress penalties.
+      </p>
+    </div>
+
+    <!-- Right: Configurable Weighted Points Progress Bars -->
+    <div class="lg:col-span-8 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Configurable Weighted Indicator Breakdown</h3>
+        <span class="text-xs text-slate-400">Sum of 3 Pillars + Bonus</span>
+      </div>
+
+      <!-- Sleep Progress -->
+      <div class="space-y-1.5">
+        <div class="flex justify-between text-xs">
+          <span class="font-medium text-slate-300">Sleep Duration ({{ '%.0f'|format(metrics.scoring_config.weight_sleep * 100) }}% Configured Weight)</span>
+          <strong class="text-indigo-400 font-mono">{{ '%.1f'|format(metrics.score_breakdown.sleep_pts) }} / {{ '%.0f'|format(metrics.scoring_config.weight_sleep * 100) }} pts</strong>
+        </div>
+        <div class="w-full bg-surface-700 rounded-full h-2.5 overflow-hidden">
+          <div class="bg-indigo-500 h-2.5 rounded-full" style="width: {{ [(metrics.score_breakdown.sleep_pts / (metrics.scoring_config.weight_sleep * 100) * 100), 100]|min }}%"></div>
+        </div>
+      </div>
+
+      <!-- Activity Progress -->
+      <div class="space-y-1.5">
+        <div class="flex justify-between text-xs">
+          <span class="font-medium text-slate-300">Physical Activity ({{ '%.0f'|format(metrics.scoring_config.weight_activity * 100) }}% Configured Weight)</span>
+          <strong class="text-emerald-400 font-mono">{{ '%.1f'|format(metrics.score_breakdown.activity_pts) }} / {{ '%.0f'|format(metrics.scoring_config.weight_activity * 100) }} pts</strong>
+        </div>
+        <div class="w-full bg-surface-700 rounded-full h-2.5 overflow-hidden">
+          <div class="bg-emerald-500 h-2.5 rounded-full" style="width: {{ [(metrics.score_breakdown.activity_pts / (metrics.scoring_config.weight_activity * 100) * 100), 100]|min }}%"></div>
+        </div>
+      </div>
+
+      <!-- Hydration Progress -->
+      <div class="space-y-1.5">
+        <div class="flex justify-between text-xs">
+          <span class="font-medium text-slate-300">Hydration Intake ({{ '%.0f'|format(metrics.scoring_config.weight_water * 100) }}% Configured Weight)</span>
+          <strong class="text-cyan-400 font-mono">{{ '%.1f'|format(metrics.score_breakdown.water_pts) }} / {{ '%.0f'|format(metrics.scoring_config.weight_water * 100) }} pts</strong>
+        </div>
+        <div class="w-full bg-surface-700 rounded-full h-2.5 overflow-hidden">
+          <div class="bg-cyan-500 h-2.5 rounded-full" style="width: {{ [(metrics.score_breakdown.water_pts / (metrics.scoring_config.weight_water * 100) * 100), 100]|min }}%"></div>
+        </div>
+      </div>
+
+      <!-- Mood & Stress Modifiers -->
+      <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+        <span class="flex items-center gap-1.5">
+          <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>Mood Bonus: <strong class="text-emerald-300 font-mono">+{{ '%.1f'|format(metrics.score_breakdown.mood_bonus) }} pts</strong></span>
+        </span>
+        <span class="flex items-center gap-1.5">
+          <i data-lucide="minus-circle" class="w-3.5 h-3.5 text-rose-400"></i>
+          <span>Stress Penalty: <strong class="text-rose-300 font-mono">-{{ '%.1f'|format(metrics.score_breakdown.stress_penalty) }} pts</strong></span>
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Sliding-Window Trend Detection Cards -->
+  <div class="bg-surface-850 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+      <div>
+        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Sliding 3-Day Window Math</span>
+        <h2 class="text-base font-bold text-white">Sliding-Window Trend Classifications</h2>
+      </div>
+      <span class="text-xs text-slate-500">Threshold: &gt;+10% Impr, &lt;-10% Decline, &plusmn;5% Stagnant, &gt;25% Sudden</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {% for ind, tinfo in metrics.trends.items() %}
+      <div class="p-4 rounded-2xl bg-surface-800 border border-slate-700/70 flex flex-col justify-between space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-sm text-white">{{ ind|replace('_', ' ')|capitalize }}</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold {% if 'improvement' in tinfo.classification %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% elif 'decline' in tinfo.classification %}bg-rose-500/10 text-rose-400 border border-rose-500/20{% elif 'sudden' in tinfo.classification %}bg-amber-500/10 text-amber-400 border border-amber-500/20{% else %}bg-slate-700/50 text-slate-300 border border-slate-600/50{% endif %}">
+            {{ tinfo.classification|title }}
+          </span>
+        </div>
+
+        <div>
+          <div class="text-2xl font-black text-white font-mono">
+            {{ '%+.1f'|format(tinfo.percentage_change) }}%
+          </div>
+          <span class="text-[10px] text-slate-400">vs prior 3-day baseline window</span>
+        </div>
+
+        <p class="text-xs text-slate-300 leading-relaxed pt-2 border-t border-slate-700/50">
+          {{ tinfo.reason }}
+        </p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Lower Split: Recommendations & What-If Simulator -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- Actionable Non-Medical Guidance (7 Cols) -->
+    <div class="lg:col-span-7 bg-surface-850 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-accent-400 tracking-wider">Strategy Pattern Outputs</span>
+          <h2 class="text-base font-bold text-white">Personalized Non-Medical Recommendations</h2>
+        </div>
+        <span class="text-xs text-slate-500">Ranked by Priority</span>
+      </div>
+
+      {% if metrics.recommendations %}
+      <div class="space-y-3">
+        {% for rec in metrics.recommendations %}
+        <div class="p-4 rounded-2xl bg-surface-800 border-l-4 border-brand-500 border-y border-r border-slate-700/70 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-brand-400">{{ rec.indicator|replace('_', ' ')|capitalize }} Strategy</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+              Priority {{ rec.priority }}
+            </span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium">
+            {{ rec.suggestion }}
+          </p>
+          <div class="text-xs text-slate-400 pt-1 border-t border-slate-700/50">
+            <strong class="text-slate-300">Algorithmic Rationale:</strong> {{ rec.reason }}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="p-6 rounded-2xl bg-brand-950/20 border border-brand-500/20 text-xs text-brand-300">
+        All indicators meet or exceed configured targets. Continue your current routine!
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- What-If Simulator (5 Cols) -->
+    <div class="lg:col-span-5 bg-surface-850 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5">
+      <div class="pb-3 border-b border-slate-800">
+        <span class="text-[10px] uppercase font-bold text-brand-400 tracking-wider">Interactive Simulator</span>
+        <h2 class="text-base font-bold text-white">"What-If" Lifestyle Predictor</h2>
+        <p class="text-xs text-slate-400 mt-1">Adjust inputs to simulate score impact in real time</p>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <div class="flex justify-between text-xs font-semibold mb-1 text-slate-300">
+            <span>Sleep Duration</span>
+            <span id="simSleepVal" class="text-indigo-400 font-mono">7.5 hrs</span>
+          </div>
+          <input type="range" id="simSleep" min="4" max="12" step="0.5" value="7.5" class="w-full">
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs font-semibold mb-1 text-slate-300">
+            <span>Physical Activity</span>
+            <span id="simActVal" class="text-emerald-400 font-mono">30 mins</span>
+          </div>
+          <input type="range" id="simAct" min="0" max="90" step="5" value="30" class="w-full">
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs font-semibold mb-1 text-slate-300">
+            <span>Water Hydration</span>
+            <span id="simWaterVal" class="text-cyan-400 font-mono">2.0 L</span>
+          </div>
+          <input type="range" id="simWater" min="0.5" max="4.0" step="0.2" value="2.0" class="w-full">
+        </div>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-surface-800 border border-slate-700/80 text-center">
+        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Simulated Composite Score</span>
+        <div id="simScoreOutput" class="text-5xl font-black text-brand-400 my-1 tracking-tight">85.0</div>
+        <span class="text-[11px] text-slate-400">Normalizes against targets (8h, 30m, 2L)</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

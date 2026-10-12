@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% block title %}Analytics · HealthBridge{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+    <div>
+      <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20 text-xs font-semibold mb-1">
+        <i data-lucide="line-chart" class="w-3.5 h-3.5"></i>
+        <span>DATA-DRIVEN INSIGHTS</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        Longitudinal Lifestyle Analysis
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-400 mt-0.5">
+        Multi-indicator timelines, moving averages, and 5-pillar lifestyle balance radar wheel.
+      </p>
+    </div>
+
+    <a href="{{ url_for('reports') }}" class="px-4 py-2 rounded-xl bg-surface-800 hover:bg-surface-700 border border-slate-700 text-xs text-brand-400 hover:text-brand-300 font-semibold flex items-center gap-1.5 transition">
+      <i data-lucide="file-text" class="w-4 h-4"></i>
+      <span>Generate Weekly Report →</span>
+    </a>
+  </div>
+
+  <!-- Summary Cards Grid -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="p-4 rounded-2xl bg-surface-850 border border-slate-800 shadow-md">
+      <span class="text-xs font-semibold text-slate-400">7-Day Avg Sleep</span>
+      <div class="text-2xl font-black text-indigo-400 mt-1">
+        {{ '%.1f'|format(metrics.averages.sleep) }} <span class="text-xs font-normal text-slate-500">hrs</span>
+      </div>
+      <span class="text-[11px] text-slate-400 font-medium">
+        {{ '%.0f'|format(metrics.averages.sleep / metrics.scoring_config.sleep_target * 100) }}% of target
+      </span>
+    </div>
+
+    <div class="p-4 rounded-2xl bg-surface-850 border border-slate-800 shadow-md">
+      <span class="text-xs font-semibold text-slate-400">7-Day Avg Activity</span>
+      <div class="text-2xl font-black text-emerald-400 mt-1">
+        {{ '%.0f'|format(metrics.averages.activity) }} <span class="text-xs font-normal text-slate-500">mins</span>
+      </div>
+      <span class="text-[11px] text-slate-400 font-medium">
+        {{ '%.0f'|format(metrics.averages.activity / metrics.scoring_config.activity_target * 100) }}% of target
+      </span>
+    </div>
+
+    <div class="p-4 rounded-2xl bg-surface-850 border border-slate-800 shadow-md">
+      <span class="text-xs font-semibold text-slate-400">7-Day Avg Hydration</span>
+      <div class="text-2xl font-black text-cyan-400 mt-1">
+        {{ '%.1f'|format(metrics.averages.water) }} <span class="text-xs font-normal text-slate-500">L</span>
+      </div>
+      <span class="text-[11px] text-slate-400 font-medium">
+        {{ '%.0f'|format(metrics.averages.water / metrics.scoring_config.water_target * 100) }}% of target
+      </span>
+    </div>
+
+    <div class="p-4 rounded-2xl bg-surface-850 border border-slate-800 shadow-md">
+      <span class="text-xs font-semibold text-slate-400">Overall Score</span>
+      <div class="text-2xl font-black text-brand-400 mt-1">
+        {{ '%.1f'|format(metrics.overall_score) }} <span class="text-xs font-normal text-slate-500">/ 100</span>
+      </div>
+      <span class="text-[11px] text-emerald-400 font-medium">
+        {{ metrics.score_band }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Charts Grid (Multi-Indicator Timeline + Balance Radar) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- Left: Timeline Chart (7 Cols) -->
+    <div class="lg:col-span-7 bg-surface-850 border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Historical Trajectory</span>
+          <h2 class="text-base font-bold text-white">Daily Multi-Indicator Trends</h2>
+        </div>
+        <span class="text-xs text-slate-500">Sleep (hrs), Activity (mins), Water (L)</span>
+      </div>
+      <div class="flex-1 min-h-[300px]">
+        <canvas id="analyticsMultiChart" data-series='{{ metrics.chart_data|tojson }}'></canvas>
+      </div>
+    </div>
+
+    <!-- Right: Lifestyle Radar Chart (5 Cols) -->
+    <div class="lg:col-span-5 bg-surface-850 border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-accent-400 tracking-wider">Lifestyle Balance</span>
+          <h2 class="text-base font-bold text-white">5-Pillar Lifestyle Balance Wheel</h2>
+        </div>
+        <span class="text-xs text-slate-500">Target %</span>
+      </div>
+      <div class="flex-1 min-h-[300px] flex items-center justify-center">
+        {% set radar_vals = [
+          [metrics.averages.sleep / metrics.scoring_config.sleep_target * 100, 100]|min,
+          [metrics.averages.activity / metrics.scoring_config.activity_target * 100, 100]|min,
+          [metrics.averages.water / metrics.scoring_config.water_target * 100, 100]|min,
+          (metrics.averages.mood / 5.0 * 100),
+          ((6 - metrics.averages.stress) / 5.0 * 100)
+        ] %}
+        <canvas id="analyticsRadarChart" data-radar='{{ radar_vals|tojson }}'></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Detailed Indicator Metrics Table -->
+  <div class="bg-surface-850 border border-slate-800 rounded-3xl p-6 shadow-xl">
+    <div class="pb-3 border-b border-slate-800 mb-4">
+      <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Metrics Deep Dive</span>
+      <h2 class="text-base font-bold text-white">Comprehensive Target Fulfillment Summary</h2>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Indicator</th>
+            <th>7-Day Average</th>
+            <th>Target</th>
+            <th>Fulfillment</th>
+            <th>Sliding Trend</th>
+            <th>Week-over-Week Delta</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Sleep -->
+          <tr>
+            <td><strong class="text-white">Sleep Duration</strong></td>
+            <td><span class="text-indigo-300 font-mono font-medium">{{ '%.1f'|format(metrics.averages.sleep) }} hours</span></td>
+            <td><span class="text-slate-400">{{ '%.1f'|format(metrics.scoring_config.sleep_target) }} hours</span></td>
+            <td>
+              <div class="flex items-center gap-2">
+                <div class="w-24 bg-surface-700 rounded-full h-2 overflow-hidden">
+                  <div class="bg-indigo-500 h-2 rounded-full" style="width: {{ [metrics.averages.sleep / metrics.scoring_config.sleep_target * 100, 100]|min }}%"></div>
+                </div>
+                <span class="text-xs text-slate-300 font-mono">{{ '%.0f'|format(metrics.averages.sleep / metrics.scoring_config.sleep_target * 100) }}%</span>
+              </div>
+            </td>
+            <td>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                {{ metrics.trends.get('sleep_hours', {}).get('classification', 'Stable')|title }}
+              </span>
+            </td>
+            <td>
+              {% set wow_s = metrics.wow_changes.get('sleep_hours', 0) %}
+              <span class="font-mono text-xs font-bold {% if wow_s > 0 %}text-emerald-400{% elif wow_s < 0 %}text-rose-400{% else %}text-slate-400{% endif %}">
+                {{ '%+.1f'|format(wow_s) }}%
+              </span>
+            </td>
+          </tr>
+
+          <!-- Activity -->
+          <tr>
+            <td><strong class="text-white">Physical Activity</strong></td>
+            <td><span class="text-emerald-300 font-mono font-medium">{{ '%.0f'|format(metrics.averages.activity) }} mins</span></td>
+            <td><span class="text-slate-400">{{ metrics.scoring_config.activity_target }} mins</span></td>
+            <td>
+              <div class="flex items-center gap-2">
+                <div class="w-24 bg-surface-700 rounded-full h-2 overflow-hidden">
+                  <div class="bg-emerald-500 h-2 rounded-full" style="width: {{ [metrics.averages.activity / metrics.scoring_config.activity_target * 100, 100]|min }}%"></div>
+                </div>
+                <span class="text-xs text-slate-300 font-mono">{{ '%.0f'|format(metrics.averages.activity / metrics.scoring_config.activity_target * 100) }}%</span>
+              </div>
+            </td>
+            <td>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                {{ metrics.trends.get('activity_minutes', {}).get('classification', 'Stable')|title }}
+              </span>
+            </td>
+            <td>
+              {% set wow_a = metrics.wow_changes.get('activity_minutes', 0) %}
+              <span class="font-mono text-xs font-bold {% if wow_a > 0 %}text-emerald-400{% elif wow_a < 0 %}text-rose-400{% else %}text-slate-400{% endif %}">
+                {{ '%+.1f'|format(wow_a) }}%
+              </span>
+            </td>
+          </tr>
+
+          <!-- Hydration -->
+          <tr>
+            <td><strong class="text-white">Hydration Intake</strong></td>
+            <td><span class="text-cyan-300 font-mono font-medium">{{ '%.1f'|format(metrics.averages.water) }} Litres</span></td>
+            <td><span class="text-slate-400">{{ '%.1f'|format(metrics.scoring_config.water_target) }} Litres</span></td>
+            <td>
+              <div class="flex items-center gap-2">
+                <div class="w-24 bg-surface-700 rounded-full h-2 overflow-hidden">
+                  <div class="bg-cyan-500 h-2 rounded-full" style="width: {{ [metrics.averages.water / metrics.scoring_config.water_target * 100, 100]|min }}%"></div>
+                </div>
+                <span class="text-xs text-slate-300 font-mono">{{ '%.0f'|format(metrics.averages.water / metrics.scoring_config.water_target * 100) }}%</span>
+              </div>
+            </td>
+            <td>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                {{ metrics.trends.get('water_litres', {}).get('classification', 'Stable')|title }}
+              </span>
+            </td>
+            <td>
+              {% set wow_w = metrics.wow_changes.get('water_litres', 0) %}
+              <span class="font-mono text-xs font-bold {% if wow_w > 0 %}text-emerald-400{% elif wow_w < 0 %}text-rose-400{% else %}text-slate-400{% endif %}">
+                {{ '%+.1f'|format(wow_w) }}%
+              </span>
+            </td>
+          </tr>
+
+          <!-- Mood -->
+          <tr>
+            <td><strong class="text-white">Mood Rating</strong></td>
+            <td><span class="text-indigo-300 font-mono font-medium">{{ '%.1f'|format(metrics.averages.mood) }} / 5</span></td>
+            <td><span class="text-slate-400">4.0 / 5</span></td>
+            <td>
+              <div class="flex items-center gap-2">
+                <div class="w-24 bg-surface-700 rounded-full h-2 overflow-hidden">
+                  <div class="bg-indigo-500 h-2 rounded-full" style="width: {{ (metrics.averages.mood / 5 * 100) }}%"></div>
+                </div>
+                <span class="text-xs text-slate-300 font-mono">{{ '%.0f'|format(metrics.averages.mood / 5 * 100) }}%</span>
+              </div>
+            </td>
+            <td><span class="text-xs text-slate-500">—</span></td>
+            <td><span class="text-xs text-slate-500">—</span></td>
+          </tr>
+
+          <!-- Stress -->
+          <tr>
+            <td><strong class="text-white">Stress Level</strong></td>
+            <td><span class="text-pink-300 font-mono font-medium">{{ '%.1f'|format(metrics.averages.stress) }} / 5</span></td>
+            <td><span class="text-slate-400">&le; 2.0 / 5 (Lower is better)</span></td>
+            <td>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold {% if metrics.averages.stress <= 2.5 %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% else %}bg-amber-500/10 text-amber-400 border border-amber-500/20{% endif %}">
+                {{ 'Well Managed' if metrics.averages.stress <= 2.5 else 'Elevated' }}
+              </span>
+            </td>
+            <td><span class="text-xs text-slate-500">—</span></td>
+            <td><span class="text-xs text-slate-500">—</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+{% endblock %}

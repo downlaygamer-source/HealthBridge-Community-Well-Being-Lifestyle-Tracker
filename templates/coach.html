@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %}Community Coach · HealthBridge{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+    <div>
+      <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20 text-xs font-semibold mb-1">
+        <i data-lucide="heart-handshake" class="w-3.5 h-3.5"></i>
+        <span>SDG 3 &amp; 10 ADVOCACY</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        Community Wellness Coach
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-400 mt-0.5">
+        Zero-cost, barrier-free lifestyle habits designed to promote health equity across neighborhoods.
+      </p>
+    </div>
+
+    <button data-modal-open="addIdeaModal" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-md shadow-brand-500/20 flex items-center gap-1.5 transition">
+      <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+      <span>Share Accessible Tip</span>
+    </button>
+  </div>
+
+  <!-- SDG 3 & 10 Deep Dive Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="p-6 rounded-3xl bg-surface-850 border border-slate-800 shadow-xl space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+          UN SDG 3 · Good Health &amp; Well-Being
+        </span>
+        <i data-lucide="heart-pulse" class="w-5 h-5 text-emerald-400"></i>
+      </div>
+      <h3 class="text-lg font-bold text-white">Target 3.4 — Preventative Lifestyle Reflections</h3>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Sedentary habits, chronic sleep deficit, and poor hydration are preventable drivers of cardiovascular strain, metabolic fatigue, and cognitive burnout. HealthBridge provides transparent daily tracking to empower preventative habits before clinical intervention is needed.
+      </p>
+    </div>
+
+    <div class="p-6 rounded-3xl bg-surface-850 border border-slate-800 shadow-xl space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 uppercase tracking-wider">
+          UN SDG 10 · Reduced Inequalities
+        </span>
+        <i data-lucide="users" class="w-5 h-5 text-cyan-400"></i>
+      </div>
+      <h3 class="text-lg font-bold text-white">Target 10.2 — Accessible, Barrier-Free Habits</h3>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Modern commercial wellness apps demand expensive wearable sensors, gym memberships, or subscription meal kits. HealthBridge focuses exclusively on zero-cost habits (tap water, neighborhood walking, sleep regularity) accessible to individuals of any economic background.
+      </p>
+    </div>
+  </div>
+
+  <!-- Community Ideas Grid -->
+  <div class="bg-surface-850 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+      <div>
+        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Community Pool</span>
+        <h2 class="text-base font-bold text-white">Neighborhood Wellness Tips ({{ ideas|length }} Shared)</h2>
+      </div>
+      <button data-modal-open="addIdeaModal" class="text-xs text-brand-400 hover:text-brand-300 font-semibold transition">
+        ＋ Post Tip
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {% for idea in ideas %}
+      <div class="p-4 rounded-2xl bg-surface-800 border border-slate-700/70 flex flex-col justify-between space-y-3 hover:border-brand-500/40 transition">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-brand-500/10 text-brand-400 border border-brand-500/20">
+              {{ idea.category }}
+            </span>
+            <span class="text-[10px] text-slate-400">{{ idea.sdg_target }}</span>
+          </div>
+          <h4 class="text-sm font-bold text-white">{{ idea.title }}</h4>
+          <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
+            {{ idea.description }}
+          </p>
+        </div>
+
+        <div class="pt-3 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">
+          <span>By <strong>{{ idea.author_name }}</strong></span>
+          <form method="post" action="{{ url_for('like_idea', idea_id=idea.id) }}" class="inline">
+            <button type="submit" class="px-2.5 py-1 rounded-lg bg-surface-700 hover:bg-rose-950/40 text-rose-300 border border-slate-600 text-xs font-semibold flex items-center gap-1 transition">
+              <i data-lucide="heart" class="w-3 h-3 text-rose-400"></i>
+              <span>{{ idea.likes }} Helpful</span>
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal to Add Community Tip -->
+<div id="addIdeaModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden place-items-center p-4">
+  <div class="bg-surface-800 border border-slate-700/80 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+    <div class="flex items-center justify-between border-b border-slate-700/60 pb-3 mb-4">
+      <div>
+        <h3 class="font-bold text-base text-white">Share an Accessible Wellness Tip</h3>
+        <p class="text-xs text-slate-400">Zero-cost lifestyle habit for the community</p>
+      </div>
+      <button data-modal-close class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/60">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <form method="post" action="{{ url_for('add_idea') }}" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Tip Title</label>
+        <input name="title" placeholder="e.g. 10-Minute Morning Porch Sunlight Walk" required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Category</label>
+        <select name="category" required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+          <option value="Physical Activity">Physical Activity</option>
+          <option value="Sleep Hygiene">Sleep Hygiene</option>
+          <option value="Hydration">Hydration</option>
+          <option value="Stress Reduction">Stress Reduction</option>
+          <option value="Community Wellness">Community Wellness</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Practical Description</label>
+        <textarea name="description" rows="3" placeholder="Explain the zero-cost action and why it helps..." required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-brand-500"></textarea>
+      </div>
+
+      <div class="flex justify-end gap-2.5 pt-2 border-t border-slate-700/60">
+        <button type="button" data-modal-close class="px-4 py-2 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-700/60 transition">Cancel</button>
+        <button type="submit" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-md transition">Share Tip</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

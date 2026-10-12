@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}HealthBridge · Community Well-Being & Lifestyle Tracker{% endblock %}</title>
+  <meta name="description" content="HealthBridge — Community lifestyle & habit tracker aligned with UN SDG 3 and SDG 10.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            },
+            accent: {
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+            },
+            surface: {
+              900: '#090e17',
+              850: '#0f172a',
+              800: '#131e33',
+              700: '#1e293b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body class="bg-surface-900 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- Top Navigation Bar (Modern Eliva-Style Top Bar) -->
+  <header class="border-b border-slate-800/80 bg-surface-850/80 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-3">
+        <a href="{{ url_for('dashboard') if g.user else url_for('login') }}" class="flex items-center gap-3 group">
+          <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-600 via-brand-500 to-accent-400 flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
+            <i data-lucide="activity" class="h-5 w-5 text-white"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-lg font-bold tracking-tight text-white">HealthBridge</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20 font-semibold tracking-wide">SDG 3 · 10</span>
+            </div>
+            <p class="text-[11px] text-slate-400 hidden sm:block">Community Well-Being Tracker</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- Center Navigation Links -->
+      {% if g.user %}
+      <nav class="hidden lg:flex items-center space-x-1">
+        <a href="{{ url_for('dashboard') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors {% if request.endpoint == 'dashboard' %}bg-brand-500/10 text-brand-400 border border-brand-500/20{% else %}text-slate-300 hover:text-white hover:bg-slate-800/60{% endif %} flex items-center gap-1.5">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="{{ url_for('intelligence') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors {% if request.endpoint == 'intelligence' %}bg-brand-500/10 text-brand-400 border border-brand-500/20{% else %}text-slate-300 hover:text-white hover:bg-slate-800/60{% endif %} flex items-center gap-1.5">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>Intelligence</span>
+        </a>
+        <a href="{{ url_for('analytics') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors {% if request.endpoint == 'analytics' %}bg-brand-500/10 text-brand-400 border border-brand-500/20{% else %}text-slate-300 hover:text-white hover:bg-slate-800/60{% endif %} flex items-center gap-1.5">
+          <i data-lucide="line-chart" class="w-4 h-4"></i>
+          <span>Analytics</span>
+        </a>
+        <a href="{{ url_for('records') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors {% if request.endpoint == 'records' %}bg-brand-500/10 text-brand-400 border border-brand-500/20{% else %}text-slate-300 hover:text-white hover:bg-slate-800/60{% endif %} flex items-center gap-1.5">
+          <i data-lucide="calendar" class="w-4 h-4"></i>
+          <span>Records</span>
+        </a>
+        <a href="{{ url_for('reports') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors {% if request.endpoint == 'reports' %}bg-brand-500/10 text-brand-400 border border-brand-500/20{% else %}text-slate-300 hover:text-white hover:bg-slate-800/60{% endif %} flex items-center gap-1.5">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Reports</span>
+        </a>
+        <a href="{{ url_for('validation_lab') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors {% if request.endpoint == 'validation_lab' %}bg-brand-500/10 text-brand-400 border border-brand-500/20{% else %}text-slate-300 hover:text-white hover:bg-slate-800/60{% endif %} flex items-center gap-1.5">
+          <i data-lucide="flask-conical" class="w-4 h-4 text-accent-400"></i>
+          <span>Validation Lab</span>
+        </a>
+        <a href="{{ url_for('coach') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors {% if request.endpoint == 'coach' %}bg-brand-500/10 text-brand-400 border border-brand-500/20{% else %}text-slate-300 hover:text-white hover:bg-slate-800/60{% endif %} flex items-center gap-1.5">
+          <i data-lucide="heart-handshake" class="w-4 h-4"></i>
+          <span>Coach</span>
+        </a>
+        <a href="{{ url_for('goals') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors {% if request.endpoint == 'goals' %}bg-brand-500/10 text-brand-400 border border-brand-500/20{% else %}text-slate-300 hover:text-white hover:bg-slate-800/60{% endif %} flex items-center gap-1.5">
+          <i data-lucide="target" class="w-4 h-4"></i>
+          <span>Goals</span>
+        </a>
+        {% if g.user.role in ('manager', 'community_worker', 'admin') %}
+        <a href="{{ url_for('manager_dashboard') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors {% if request.endpoint == 'manager_dashboard' %}bg-purple-500/20 text-purple-300 border border-purple-500/30{% else %}text-purple-300 hover:text-white hover:bg-slate-800/60{% endif %} flex items-center gap-1.5">
+          <i data-lucide="users" class="w-4 h-4 text-purple-400"></i>
+          <span>Members</span>
+        </a>
+        {% endif %}
+        {% if g.user.role == 'admin' %}
+        <a href="{{ url_for('admin_dashboard') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors {% if request.endpoint == 'admin_dashboard' %}bg-cyan-500/20 text-cyan-300 border border-cyan-500/30{% else %}text-cyan-300 hover:text-white hover:bg-slate-800/60{% endif %} flex items-center gap-1.5">
+          <i data-lucide="shield" class="w-4 h-4 text-cyan-400"></i>
+          <span>Admin</span>
+        </a>
+        {% endif %}
+      </nav>
+      {% endif %}
+
+      <!-- Right Action Items -->
+      <div class="flex items-center space-x-2.5">
+        {% if g.user %}
+
+          <!-- Quick Log Button -->
+          <button data-modal-open="addRecordModal" class="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white text-xs font-semibold shadow-md shadow-brand-500/20 flex items-center gap-1.5 transition">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>Log Day</span>
+          </button>
+
+          <!-- Settings & Logout Dropdown -->
+          <div class="relative group">
+            <button id="userMenuBtn" type="button" class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-brand-400 hover:border-brand-500/50 transition">
+              {{ g.user['full_name'][0]|upper }}
+            </button>
+            <div id="userMenuDropdown" class="absolute right-0 mt-1 w-48 rounded-xl bg-surface-800 border border-slate-700/80 shadow-2xl p-1.5 hidden group-hover:block z-50">
+              <div class="px-3 py-2 border-b border-slate-700/50 mb-1">
+                <p class="text-xs font-bold text-white truncate">{{ g.user['full_name'] }}</p>
+                <p class="text-[10px] text-brand-400 font-semibold uppercase">{{ g.user['role']|replace('_', ' ') }}</p>
+              </div>
+              <a href="{{ url_for('profile') }}" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs text-slate-200 hover:bg-slate-700/60 transition">
+                <i data-lucide="user" class="w-3.5 h-3.5"></i> Profile
+              </a>
+              <a href="{{ url_for('settings') }}" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs text-slate-200 hover:bg-slate-700/60 transition">
+                <i data-lucide="settings" class="w-3.5 h-3.5"></i> Settings
+              </a>
+              <div class="border-t border-slate-700/50 my-1"></div>
+              <a href="{{ url_for('logout') }}" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs text-rose-300 hover:bg-rose-950/40 transition">
+                <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Sign Out
+              </a>
+            </div>
+          </div>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition">
+            Sign In
+          </a>
+          <a href="{{ url_for('signup') }}" class="px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-md shadow-brand-500/20 transition">
+            Get Started
+          </a>
+        {% endif %}
+
+        <!-- Mobile Menu Button -->
+        <button id="mobileNavToggle" class="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Drawer -->
+    {% if g.user %}
+    <div id="mobileNavDrawer" class="hidden lg:hidden border-t border-slate-800 bg-surface-850 px-4 py-3 space-y-1">
+      <a href="{{ url_for('dashboard') }}" class="block px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">Dashboard</a>
+      <a href="{{ url_for('intelligence') }}" class="block px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">Health Intelligence</a>
+      <a href="{{ url_for('analytics') }}" class="block px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">Analytics &amp; Radar</a>
+      <a href="{{ url_for('records') }}" class="block px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">Daily Records</a>
+      <a href="{{ url_for('reports') }}" class="block px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">Weekly Reports</a>
+      <a href="{{ url_for('validation_lab') }}" class="block px-3 py-2 rounded-lg text-sm text-accent-400 hover:bg-slate-800">Validation Lab</a>
+      <a href="{{ url_for('coach') }}" class="block px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">Community Coach</a>
+      <a href="{{ url_for('goals') }}" class="block px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">Wellness Goals</a>
+      {% if g.user.role in ('manager', 'community_worker', 'admin') %}
+      <a href="{{ url_for('manager_dashboard') }}" class="block px-3 py-2 rounded-lg text-sm text-purple-300 hover:bg-slate-800">Community Members</a>
+      {% endif %}
+      {% if g.user.role == 'admin' %}
+      <a href="{{ url_for('admin_dashboard') }}" class="block px-3 py-2 rounded-lg text-sm text-cyan-300 hover:bg-slate-800">Admin Control Panel</a>
+      {% endif %}
+      <div class="border-t border-slate-800 my-2 pt-1">
+        <a href="{{ url_for('profile') }}" class="block px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">Profile</a>
+        <a href="{{ url_for('settings') }}" class="block px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">Settings</a>
+        <a href="{{ url_for('logout') }}" class="block px-3 py-2 rounded-lg text-sm text-rose-400 hover:bg-slate-800">Sign Out</a>
+      </div>
+    </div>
+    {% endif %}
+  </header>
+
+  <!-- Trial / Demo Notice Banner -->
+  {% if g.user and g.user.role == 'demo' %}
+  <div class="bg-amber-950/40 border-b border-amber-500/30 px-4 py-2 text-center text-xs text-amber-300 font-medium flex items-center justify-center gap-2">
+    <i data-lucide="flask-conical" class="w-4 h-4 text-amber-400 flex-shrink-0"></i>
+    <span><strong>DEMONSTRATION TRIAL PROFILE:</strong> This account uses realistic fictional records for safe demonstration. You can safely explore records and weekly reports.</span>
+  </div>
+  {% endif %}
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 w-full">
+      {% for category, message in messages %}
+      <div class="p-3.5 rounded-xl border flex items-center gap-3 text-sm font-medium {% if category == 'success' %}bg-brand-950/40 border-brand-500/30 text-brand-300{% else %}bg-rose-950/40 border-rose-500/30 text-rose-300{% endif %}">
+        <i data-lucide="{% if category == 'success' %}check-circle-2{% else %}alert-circle{% endif %}" class="w-4 h-4 flex-shrink-0"></i>
+        <span>{{ message }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Main Content Page -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="border-t border-slate-800/80 bg-surface-900 py-6 mt-12 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="h-6 w-6 rounded-md bg-brand-600 flex items-center justify-center text-white text-[10px] font-bold">HB</div>
+        <span>HealthBridge · HACK-AI-THON 2026</span>
+      </div>
+      <p class="text-slate-400">
+        Non-diagnostic community lifestyle tracking aligned with <strong>SDG 3</strong> (Good Health) &amp; <strong>SDG 10</strong> (Reduced Inequalities).
+      </p>
+      <div class="flex items-center gap-4 text-slate-400">
+        <a href="{{ url_for('validation_lab') }}" class="hover:text-brand-400 transition">Validation Lab</a>
+        <span>·</span>
+        <a href="{{ url_for('coach') }}" class="hover:text-brand-400 transition">SDG Coach</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Quick Log Modal Dialog -->
+  {% if g.user %}
+  <div id="addRecordModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden place-items-center p-4">
+    <div class="bg-surface-800 border border-slate-700/80 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+      <div class="flex items-center justify-between border-b border-slate-700/60 pb-3 mb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 rounded-lg bg-brand-500/10 text-brand-400 border border-brand-500/20">
+            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-white">Log Daily Wellness</h3>
+            <p class="text-xs text-slate-400">Record today's lifestyle indicators</p>
+          </div>
+        </div>
+        <button data-modal-close class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/60">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form method="post" action="{{ url_for('add_record') }}" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Calendar Date</label>
+          <input type="date" name="record_date" value="{{ today_date }}" required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Sleep Duration (hrs, 0–24)</label>
+            <input type="number" step="0.1" min="0" max="24" name="sleep_hours" placeholder="e.g. 7.5" required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Physical Activity (mins, ≥0)</label>
+            <input type="number" min="0" max="600" name="activity_minutes" placeholder="e.g. 30" required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Water Hydration (L, >0)</label>
+            <input type="number" step="0.1" min="0.1" max="15" name="water_litres" placeholder="e.g. 2.0" required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Mood Rating (1–5)</label>
+            <select name="mood_rating" class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+              <option value="5">5 — Energized</option>
+              <option value="4" selected>4 — Good</option>
+              <option value="3">3 — Neutral</option>
+              <option value="2">2 — Tired</option>
+              <option value="1">1 — Drained</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Stress Level (1–5, lower is better)</label>
+          <select name="stress_level" class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+            <option value="1">1 — Minimal / Rested</option>
+            <option value="2" selected>2 — Low / Manageable</option>
+            <option value="3">3 — Moderate</option>
+            <option value="4">4 — Elevated</option>
+            <option value="5">5 — High / Overwhelmed</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Personal Notes (Optional)</label>
+          <textarea name="notes" rows="2" placeholder="e.g. Morning walk, drank 2 bottles of water..." class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2.5 pt-2 border-t border-slate-700/60">
+          <button type="button" data-modal-close class="px-4 py-2 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-700/60 transition">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-md shadow-brand-500/20 transition">Save Entry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Modern Floating Health Assistant Widget -->
+  <div class="fixed right-5 bottom-5 z-40">
+    <button id="chatToggleBtn" class="h-12 w-12 rounded-full bg-gradient-to-tr from-brand-600 via-brand-500 to-accent-500 text-white shadow-xl shadow-brand-500/30 flex items-center justify-center hover:scale-105 active:scale-95 transition-all" title="HealthBridge Assistant">
+      <i data-lucide="bot" class="w-6 h-6"></i>
+    </button>
+
+    <div id="chatWidgetBox" class="hidden fixed right-5 bottom-20 w-[380px] max-w-[calc(100vw-32px)] h-[540px] max-h-[calc(100vh-100px)] bg-surface-850 border border-slate-700/80 rounded-2xl shadow-2xl flex-col overflow-hidden z-50">
+      <!-- Assistant Header -->
+      <div class="p-3.5 bg-gradient-to-r from-surface-800 to-surface-700 border-b border-slate-700 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="h-8 w-8 rounded-lg bg-brand-500/20 text-brand-400 border border-brand-500/30 flex items-center justify-center">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-white">HealthBridge Assistant</h4>
+            <p class="text-[10px] text-slate-400">Offline Explainable Q&amp;A</p>
+          </div>
+        </div>
+        <button id="chatCloseBtn" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Messages Log -->
+      <div id="chatMessagesLog" class="flex-1 p-3.5 overflow-y-auto space-y-3 bg-surface-900/60 text-xs">
+        <div class="p-3 rounded-2xl rounded-tl-sm bg-surface-800 border border-slate-700/60 text-slate-200 leading-relaxed">
+          Hello! I'm the HealthBridge Assistant. Pick a quick question below or ask me about your wellness score, sliding-window trends, or SDG targets!
+        </div>
+      </div>
+
+      <!-- Quick Chips -->
+      <div class="px-3 pt-2 pb-1 bg-surface-850 border-t border-slate-800">
+        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Quick Inquiries</span>
+        <div class="flex flex-wrap gap-1.5 mt-1.5 max-h-20 overflow-y-auto">
+          <button type="button" class="chat-quick-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-500/20 hover:text-brand-400 border border-slate-700/80 text-[11px] text-slate-300 transition" data-q="What is my score?">My Score</button>
+          <button type="button" class="chat-quick-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-500/20 hover:text-brand-400 border border-slate-700/80 text-[11px] text-slate-300 transition" data-q="How is the score calculated?">Scoring Formula</button>
+          <button type="button" class="chat-quick-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-500/20 hover:text-brand-400 border border-slate-700/80 text-[11px] text-slate-300 transition" data-q="How do trends work?">Sliding Trends</button>
+          <button type="button" class="chat-quick-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-500/20 hover:text-brand-400 border border-slate-700/80 text-[11px] text-slate-300 transition" data-q="What recommendations do I have?">Recommendations</button>
+          <button type="button" class="chat-quick-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-500/20 hover:text-brand-400 border border-slate-700/80 text-[11px] text-slate-300 transition" data-q="What are SDGs 3 and 10?">SDG 3 &amp; 10</button>
+          <button type="button" class="chat-quick-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-500/20 hover:text-brand-400 border border-slate-700/80 text-[11px] text-slate-300 transition" data-q="What are the validation rules?">Validation Rules</button>
+        </div>
+      </div>
+
+      <!-- Input Form -->
+      <form id="chatInputForm" class="p-2.5 bg-surface-850 border-t border-slate-800 flex gap-2">
+        <input id="chatTextInput" type="text" placeholder="Ask about trends, score, SDGs..." autocomplete="off" class="flex-1 bg-surface-700 border border-slate-600 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500">
+        <button type="submit" class="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold transition">
+          Send
+        </button>
+      </form>
+      <div class="px-3 pb-2 text-[10px] text-slate-500 bg-surface-850">
+        ⚠️ Strictly educational &amp; non-diagnostic lifestyle reflection.
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <script>
+    // Initialize Lucide icons on load
+    lucide.createIcons();
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

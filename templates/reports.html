@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% block title %}Weekly Report · HealthBridge{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+    <div>
+      <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20 text-xs font-semibold mb-1">
+        <i data-lucide="file-check" class="w-3.5 h-3.5"></i>
+        <span>STRUCTURED AUDIT EXPORTS</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        Community Well-Being Weekly Report
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-400 mt-0.5">
+        Exportable summary complying with HACK-AI-THON 2026 JSON &amp; CSV standards.
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-wrap items-center gap-2">
+      <button onclick="window.print()" class="px-3.5 py-2 rounded-xl bg-surface-800 hover:bg-surface-700 border border-slate-700 text-xs text-slate-300 hover:text-white font-medium flex items-center gap-1.5 transition">
+        <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+        <span>Print</span>
+      </button>
+
+      <a href="{{ url_for('export_report_csv_route', member_id=target_user.id if target_user else g.user.id) }}" class="px-3.5 py-2 rounded-xl bg-surface-800 hover:bg-surface-700 border border-slate-700 text-xs text-brand-400 font-semibold flex items-center gap-1.5 transition">
+        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+        <span>Export CSV</span>
+      </a>
+
+      <a href="{{ url_for('export_report_json_route', member_id=target_user.id if target_user else g.user.id) }}" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-md shadow-brand-500/20 flex items-center gap-1.5 transition">
+        <i data-lucide="file-json" class="w-3.5 h-3.5"></i>
+        <span>Export JSON</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Manager / Admin Member Selector -->
+  {% if managed_members and managed_members|length > 1 %}
+  <div class="p-3.5 rounded-2xl bg-surface-850 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+    <div class="flex items-center gap-2 text-slate-300 font-medium">
+      <i data-lucide="users" class="w-4 h-4 text-purple-400"></i>
+      <span>Authorized Member Scope:</span>
+      <span class="text-white font-bold">{{ target_user.full_name if target_user else report_data.user }}</span>
+      {% if is_managing_other %}
+        <span class="px-2 py-0.5 rounded text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30">Managed Account</span>
+      {% endif %}
+    </div>
+    <form method="get" action="{{ url_for('reports') }}" class="flex items-center gap-2">
+      <label class="text-slate-400 text-xs">Select Member:</label>
+      <select name="member_id" onchange="this.form.submit()" class="bg-surface-700 border border-slate-600 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500">
+        {% for mm in managed_members %}
+          <option value="{{ mm.id }}" {% if target_user and target_user.id == mm.id %}selected{% endif %}>
+            {{ mm.full_name }} ({{ mm.role }})
+          </option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+  {% endif %}
+
+  <!-- Empty Dataset Banner -->
+  {% if not report_data.has_data or report_data.record_count == 0 %}
+  <div class="p-4 rounded-2xl bg-blue-950/30 border border-blue-500/30 text-blue-200 text-xs flex items-start gap-3">
+    <i data-lucide="info" class="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5"></i>
+    <div class="leading-relaxed">
+      <strong class="text-blue-300 font-semibold">Zero-Record State:</strong>
+      No daily wellness records have been logged yet for this member. The summary displays default zero metrics. Once records are logged, 7-day rolling moving averages, week-over-week deltas, and non-medical recommendations will automatically populate.
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Report Sheet Card -->
+  <div class="bg-surface-850 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-8">
+
+    <!-- Report Top Header Banner -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+      <div>
+        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">HealthBridge · Official Summary</span>
+        <h2 class="text-xl sm:text-2xl font-black text-white mt-1">
+          Weekly Lifestyle Evaluation
+        </h2>
+        <div class="flex flex-wrap items-center gap-3 text-xs text-slate-400 mt-2">
+          <span>Prepared for: <strong class="text-white">{{ report_data.user }}</strong></span>
+          <span>·</span>
+          <span>ID: <code class="bg-surface-700 px-1.5 py-0.5 rounded text-amber-300 font-mono text-[11px]">{{ report_data.user_id }}</code></span>
+          <span>·</span>
+          <span>Period: <strong class="text-white">{{ report_data.period }}</strong></span>
+        </div>
+      </div>
+      <div class="h-12 w-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-500 flex items-center justify-center text-white font-extrabold shadow-lg shadow-brand-500/20">
+        HB
+      </div>
+    </div>
+
+    <!-- Summary KPI Row -->
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
+      <div class="p-3.5 rounded-2xl bg-surface-800 border border-slate-700/60">
+        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Avg Score</span>
+        <div class="text-2xl font-black text-brand-400 mt-1">{{ '%.1f'|format(report_data.summary.average_score) }}</div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-surface-800 border border-slate-700/60">
+        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Avg Sleep</span>
+        <div class="text-2xl font-black text-indigo-400 mt-1">{{ '%.1f'|format(report_data.summary.indicator_averages.sleep_hours) }} <span class="text-xs font-normal text-slate-500">hrs</span></div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-surface-800 border border-slate-700/60">
+        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Avg Activity</span>
+        <div class="text-2xl font-black text-emerald-400 mt-1">{{ '%.0f'|format(report_data.summary.indicator_averages.activity_minutes) }} <span class="text-xs font-normal text-slate-500">mins</span></div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-surface-800 border border-slate-700/60">
+        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Avg Water</span>
+        <div class="text-2xl font-black text-cyan-400 mt-1">{{ '%.1f'|format(report_data.summary.indicator_averages.water_litres) }} <span class="text-xs font-normal text-slate-500">L</span></div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-surface-800 border border-slate-700/60 col-span-2 lg:col-span-1">
+        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">WoW Score Delta</span>
+        {% set wow_total = report_data.summary.week_over_week.get('composite_score', 0) %}
+        <div class="text-2xl font-black mt-1 {% if wow_total > 0 %}text-emerald-400{% elif wow_total < 0 %}text-rose-400{% else %}text-slate-400{% endif %}">
+          {{ '%+.1f'|format(wow_total) }}%
+        </div>
+      </div>
+    </div>
+
+    <!-- Day-by-Day Breakdown Table -->
+    <div class="space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Day-by-Day Indicator Breakdown</h3>
+        <span class="text-xs text-slate-400">{{ report_data.daily_breakdown|length }} Logged Days</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Sleep</th>
+              <th>Activity</th>
+              <th>Hydration</th>
+              <th>Mood</th>
+              <th>Stress</th>
+              <th>Daily Composite</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for day in report_data.daily_breakdown %}
+            <tr>
+              <td><strong class="font-mono text-xs text-white">{{ day.date }}</strong></td>
+              <td><span class="text-indigo-300 font-mono">{{ '%.1f'|format(day.indicators.sleep_hours) }} hrs</span></td>
+              <td><span class="text-emerald-300 font-mono">{{ day.indicators.activity_minutes }} mins</span></td>
+              <td><span class="text-cyan-300 font-mono">{{ '%.1f'|format(day.indicators.water_litres) }} L</span></td>
+              <td>
+                {% if day.indicators.mood_rating %}
+                  <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">{{ day.indicators.mood_rating }} / 5</span>
+                {% else %}—{% endif %}
+              </td>
+              <td>
+                {% if day.indicators.stress_level %}
+                  <span class="px-2 py-0.5 rounded text-[10px] font-semibold {% if day.indicators.stress_level <= 2 %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% elif day.indicators.stress_level == 3 %}bg-amber-500/10 text-amber-400 border border-amber-500/20{% else %}bg-rose-500/10 text-rose-400 border border-rose-500/20{% endif %}">
+                    {{ day.indicators.stress_level }} / 5
+                  </span>
+                {% else %}—{% endif %}
+              </td>
+              <td>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  {{ '%.1f'|format(day.composite_score) }} / 100
+                </span>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="7" class="text-center py-4 text-slate-400 text-xs">No records available for this period.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Identified Trends Section -->
+    <div class="space-y-3">
+      <h3 class="text-sm font-bold text-white uppercase tracking-wider">Detected Sliding-Window Historical Trends</h3>
+      <div class="overflow-x-auto">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Indicator</th>
+              <th>Classification</th>
+              <th>Window Delta %</th>
+              <th>Mathematical Rationale</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ind, tinfo in report_data.trends.items() %}
+            <tr>
+              <td><strong class="text-white">{{ ind|replace('_', ' ')|capitalize }}</strong></td>
+              <td>
+                <span class="px-2.5 py-0.5 rounded text-[10px] font-semibold {% if 'improvement' in tinfo.classification %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% elif 'decline' in tinfo.classification %}bg-rose-500/10 text-rose-400 border border-rose-500/20{% elif 'sudden' in tinfo.classification %}bg-amber-500/10 text-amber-400 border border-amber-500/20{% else %}bg-slate-700/50 text-slate-300 border border-slate-600/50{% endif %}">
+                  {{ tinfo.classification|title }}
+                </span>
+              </td>
+              <td><span class="font-mono text-xs font-bold text-white">{{ '%+.1f'|format(tinfo.percentage_change) }}%</span></td>
+              <td class="text-xs text-slate-300">{{ tinfo.reason }}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="4" class="text-center py-4 text-slate-400 text-xs">Insufficient history to detect trends (minimum 2 days required).</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recommendations Section -->
+    <div class="space-y-3">
+      <h3 class="text-sm font-bold text-white uppercase tracking-wider">Actionable Non-Medical Guidance</h3>
+      <div class="space-y-3">
+        {% for rec in report_data.recommendations %}
+        <div class="p-4 rounded-2xl bg-surface-800 border-l-4 border-brand-500 border-y border-r border-slate-700/70 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-brand-400">{{ rec.indicator|replace('_', ' ')|capitalize }}</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+              Priority {{ rec.priority }}
+            </span>
+          </div>
+          <p class="text-xs text-slate-200 leading-relaxed font-medium">{{ rec.suggestion }}</p>
+          <div class="text-[11px] text-slate-400 pt-1 border-t border-slate-700/50">
+            <strong class="text-slate-300">Rationale:</strong> {{ rec.reason }}
+          </div>
+        </div>
+        {% else %}
+        <div class="p-4 rounded-2xl bg-surface-800 text-xs text-slate-400 text-center">
+          🌟 All indicators are meeting target, or no records have been logged yet.
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Non-Medical Disclaimer Footer -->
+    <div class="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 text-amber-200/90 text-xs flex items-start gap-3">
+      <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5"></i>
+      <div class="leading-relaxed">
+        <strong class="text-amber-300 font-semibold">Mandatory Non-Diagnostic Disclaimer:</strong>
+        {{ report_data.disclaimer }}
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

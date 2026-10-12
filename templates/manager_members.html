@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Managed Community Members · HealthBridge{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+    <div>
+      <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 text-xs font-semibold mb-1">
+        <i data-lucide="users" class="w-3.5 h-3.5"></i>
+        <span>COMMUNITY WELLNESS CIRCLE</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        Authorized Community Members
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-400 mt-0.5">
+        As a Community Manager, monitor habit consistency, inspect daily logs, and generate weekly reports for authorized members.
+      </p>
+    </div>
+  </div>
+
+  <!-- Members Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for m in members %}
+    <div class="p-6 rounded-3xl bg-surface-850 border border-slate-800 shadow-xl flex flex-col justify-between space-y-4 hover:border-purple-500/40 transition">
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center font-bold text-white text-base">
+              {{ m.full_name[0]|upper }}
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white">{{ m.full_name }}</h3>
+              <div class="flex items-center gap-2">
+                <code class="text-[10px] text-slate-400 font-mono">{{ m.user_id }}</code>
+                {% if m.role == 'demo' %}
+                  <span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold uppercase">Demo</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-500/10 text-purple-300 border border-purple-500/20">
+            {{ m.record_count or 0 }} logs
+          </span>
+        </div>
+
+        <p class="text-xs text-slate-300 leading-relaxed min-h-[40px]">
+          {{ m.bio or 'Community member participating in daily wellness tracking.' }}
+        </p>
+
+        <div class="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-surface-800 border border-slate-700/60 text-center mt-3">
+          <div>
+            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider block">Sleep</span>
+            <strong class="text-xs text-indigo-400 font-mono">{{ '%.1f'|format(m.sleep_target) }}h</strong>
+          </div>
+          <div>
+            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider block">Activity</span>
+            <strong class="text-xs text-emerald-400 font-mono">{{ m.activity_target }}m</strong>
+          </div>
+          <div>
+            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider block">Water</span>
+            <strong class="text-xs text-cyan-400 font-mono">{{ '%.1f'|format(m.water_target) }}L</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-slate-800 flex items-center gap-2">
+        <a href="{{ url_for('records', member_id=m.id) }}" class="flex-1 py-2 px-3 rounded-xl bg-surface-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 hover:text-white flex items-center justify-center gap-1.5 transition">
+          <i data-lucide="calendar" class="w-3.5 h-3.5 text-purple-400"></i>
+          <span>Records</span>
+        </a>
+        <a href="{{ url_for('reports', member_id=m.id) }}" class="flex-1 py-2 px-3 rounded-xl bg-surface-800 hover:bg-purple-600 border border-slate-700 hover:border-purple-500 text-xs font-semibold text-slate-200 hover:text-white flex items-center justify-center gap-1.5 transition">
+          <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+          <span>Weekly Report</span>
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

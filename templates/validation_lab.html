@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% block title %}Validation Lab · HealthBridge{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+    <div>
+      <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-accent-500/10 text-accent-400 border border-accent-500/20 text-xs font-semibold mb-1">
+        <i data-lucide="flask-conical" class="w-3.5 h-3.5"></i>
+        <span>JUDGE &amp; EVALUATOR BENCHMARK</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        Strict Domain Validation &amp; OOP Lab
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-400 mt-0.5">
+        Directly test how HealthBridge's domain layer enforces invariants and handles edge cases.
+      </p>
+    </div>
+
+    <a href="{{ url_for('records') }}" class="px-4 py-2 rounded-xl bg-surface-800 hover:bg-surface-700 border border-slate-700 text-xs text-slate-300 hover:text-white font-medium flex items-center gap-1.5 transition">
+      <i data-lucide="arrow-left" class="w-4 h-4"></i>
+      <span>Back to Records</span>
+    </a>
+  </div>
+
+  <!-- 1-Click Evaluator Test Cases Grid -->
+  <div class="bg-surface-850 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+      <div>
+        <span class="text-[10px] uppercase font-bold text-accent-400 tracking-wider">Automated Scenarios</span>
+        <h2 class="text-base font-bold text-white">1-Click Live Test Cases</h2>
+      </div>
+      <span class="text-xs text-slate-500">Triggers /api/test-validation</span>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <button data-test-case="negative_sleep" class="p-3.5 rounded-2xl bg-surface-800 hover:bg-rose-950/30 border border-slate-700 hover:border-rose-500/50 text-left transition group">
+        <div class="flex items-center justify-between text-xs font-bold text-rose-400 mb-1">
+          <span>Negative Sleep</span>
+          <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+        </div>
+        <p class="text-[11px] text-slate-400">Payload: <code>sleep_hours = -2.0</code></p>
+      </button>
+
+      <button data-test-case="excessive_sleep" class="p-3.5 rounded-2xl bg-surface-800 hover:bg-rose-950/30 border border-slate-700 hover:border-rose-500/50 text-left transition group">
+        <div class="flex items-center justify-between text-xs font-bold text-rose-400 mb-1">
+          <span>Excessive Sleep</span>
+          <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+        </div>
+        <p class="text-[11px] text-slate-400">Payload: <code>sleep_hours = 28.0</code></p>
+      </button>
+
+      <button data-test-case="negative_activity" class="p-3.5 rounded-2xl bg-surface-800 hover:bg-rose-950/30 border border-slate-700 hover:border-rose-500/50 text-left transition group">
+        <div class="flex items-center justify-between text-xs font-bold text-rose-400 mb-1">
+          <span>Negative Activity</span>
+          <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+        </div>
+        <p class="text-[11px] text-slate-400">Payload: <code>activity_minutes = -30</code></p>
+      </button>
+
+      <button data-test-case="zero_water" class="p-3.5 rounded-2xl bg-surface-800 hover:bg-rose-950/30 border border-slate-700 hover:border-rose-500/50 text-left transition group">
+        <div class="flex items-center justify-between text-xs font-bold text-rose-400 mb-1">
+          <span>Zero Water</span>
+          <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+        </div>
+        <p class="text-[11px] text-slate-400">Payload: <code>water_litres = 0.0</code></p>
+      </button>
+
+      <button data-test-case="duplicate_date" class="p-3.5 rounded-2xl bg-surface-800 hover:bg-rose-950/30 border border-slate-700 hover:border-rose-500/50 text-left transition group">
+        <div class="flex items-center justify-between text-xs font-bold text-rose-400 mb-1">
+          <span>Duplicate Date</span>
+          <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+        </div>
+        <p class="text-[11px] text-slate-400">User.add_record invariant check</p>
+      </button>
+
+      <button data-test-case="missing_date" class="p-3.5 rounded-2xl bg-surface-800 hover:bg-rose-950/30 border border-slate-700 hover:border-rose-500/50 text-left transition group">
+        <div class="flex items-center justify-between text-xs font-bold text-rose-400 mb-1">
+          <span>Missing Date</span>
+          <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+        </div>
+        <p class="text-[11px] text-slate-400">Empty string validation</p>
+      </button>
+
+      <button data-test-case="invalid_mood" class="p-3.5 rounded-2xl bg-surface-800 hover:bg-rose-950/30 border border-slate-700 hover:border-rose-500/50 text-left transition group">
+        <div class="flex items-center justify-between text-xs font-bold text-rose-400 mb-1">
+          <span>Out-of-Bounds Mood</span>
+          <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+        </div>
+        <p class="text-[11px] text-slate-400">Payload: <code>mood_rating = 7 / 5</code></p>
+      </button>
+
+      <button data-test-case="valid_record" class="p-3.5 rounded-2xl bg-surface-800 hover:bg-brand-950/30 border border-slate-700 hover:border-brand-500/50 text-left transition group">
+        <div class="flex items-center justify-between text-xs font-bold text-brand-400 mb-1">
+          <span>Valid Record</span>
+          <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+        </div>
+        <p class="text-[11px] text-slate-400">Payload: 7.5h, 30m, 2.0L</p>
+      </button>
+    </div>
+
+    <!-- Output Terminal Console -->
+    <div class="p-4 rounded-2xl bg-surface-900 border border-slate-700/80 shadow-inner">
+      <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+        <span>Domain Exception Console Output</span>
+        <span>Live REST Response</span>
+      </div>
+      <div id="validationResultBox" class="min-h-[70px] flex items-center justify-center text-xs text-slate-400">
+        Click any scenario card above to execute the OOP domain validator in real-time.
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Parameter Submission Form -->
+  <div class="bg-surface-850 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+    <div class="pb-3 border-b border-slate-800">
+      <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Custom Edge Testing</span>
+      <h2 class="text-base font-bold text-white">Submit Custom Input Boundaries</h2>
+      <p class="text-xs text-slate-400 mt-0.5">Submit custom inputs to test server-side flash error interception</p>
+    </div>
+
+    <form method="post" action="{{ url_for('add_record') }}" class="space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Test Date</label>
+          <input type="date" name="record_date" value="2026-10-15" required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3 py-2 text-xs text-white">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Sleep (try -5 or 30)</label>
+          <input type="number" step="0.1" name="sleep_hours" value="-2.0" required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3 py-2 text-xs text-white">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Activity (try -20)</label>
+          <input type="number" name="activity_minutes" value="15" required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3 py-2 text-xs text-white">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Water (try 0.0 or -1.5)</label>
+          <input type="number" step="0.1" name="water_litres" value="0.0" required class="w-full bg-surface-700 border border-slate-600 rounded-xl px-3 py-2 text-xs text-white">
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-md shadow-brand-500/20 transition flex items-center gap-1.5">
+          <span>Submit Custom Record</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

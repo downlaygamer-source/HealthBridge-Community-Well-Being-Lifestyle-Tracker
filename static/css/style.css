@@ -1,0 +1,72 @@
+/* HealthBridge Modern Design System Enhancements */
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(51, 65, 85, 0.7);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.6);
+}
+
+/* Glassmorphic Cards & Panels */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(51, 65, 85, 0.6);
+}
+
+/* Custom Table Styles */
+.custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.custom-table th {
+  padding: 10px 14px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: #94a3b8;
+  background: rgba(15, 23, 42, 0.8);
+  border-bottom: 1px solid #1e293b;
+  text-align: left;
+}
+.custom-table td {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #e2e8f0;
+  border-bottom: 1px solid rgba(30, 41, 59, 0.6);
+}
+.custom-table tr:hover td {
+  background: rgba(30, 41, 59, 0.35);
+}
+
+/* Range input styling */
+input[type=range] {
+  accent-color: #10b981;
+}
+
+/* Subtle glow pulse */
+@keyframes softPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.02);
+  }
+}
+.pulse-badge {
+  animation: softPulse 3s infinite ease-in-out;
+}

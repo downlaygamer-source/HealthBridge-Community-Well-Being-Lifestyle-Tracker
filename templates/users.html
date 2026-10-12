@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Community Members · HealthBridge{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+    <div>
+      <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20 text-xs font-semibold mb-1">
+        <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+        <span>USER DIRECTORY &amp; ISOLATION</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        Community Members Directory
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-400 mt-0.5">
+        HealthBridge strictly isolates every member's records, scores, and habits. Direct account switching is disabled—all accounts require email/username and password authentication.
+      </p>
+    </div>
+  </div>
+
+  <!-- Users Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for u in users %}
+    <div class="p-6 rounded-3xl bg-surface-850 border border-slate-800 shadow-xl flex flex-col justify-between space-y-4 hover:border-brand-500/40 transition">
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center font-bold text-white text-base">
+              {{ u.full_name[0]|upper }}
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white">{{ u.full_name }}</h3>
+              <span class="text-[10px] text-brand-400 font-semibold uppercase tracking-wider">{{ u.role|replace('_', ' ')|title }}</span>
+            </div>
+          </div>
+          {% if u.id == g.user['id'] %}
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            Active
+          </span>
+          {% endif %}
+        </div>
+
+        <p class="text-xs text-slate-300 leading-relaxed min-h-[48px]">
+          {{ u.bio or 'Community member participating in daily wellness tracking.' }}
+        </p>
+
+        <div class="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800/80">
+          <span class="font-mono text-[11px] text-slate-300">{{ u.email }}</span>
+          <span class="text-[10px] text-slate-500 font-semibold uppercase">{{ u.role|replace('_', ' ') }}</span>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-surface-800 border border-slate-700/60 text-center mt-3">
+          <div>
+            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider block">Sleep</span>
+            <strong class="text-xs text-indigo-400 font-mono">{{ '%.1f'|format(u.sleep_target) }}h</strong>
+          </div>
+          <div>
+            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider block">Activity</span>
+            <strong class="text-xs text-emerald-400 font-mono">{{ u.activity_target }}m</strong>
+          </div>
+          <div>
+            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider block">Water</span>
+            <strong class="text-xs text-cyan-400 font-mono">{{ '%.1f'|format(u.water_target) }}L</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

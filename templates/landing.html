@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% block title %}HealthBridge · Community Well-Being Platform{% endblock %}
+
+{% block content %}
+<div class="space-y-16 py-6">
+
+  <!-- Hero Section -->
+  <section class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+    <div class="lg:col-span-7 space-y-6">
+
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+        <span>HACK-AI-THON 2026 · UN SDG 3 &amp; 10 Challenge</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+        Community lifestyle well-being through <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 via-emerald-300 to-accent-400">transparent intelligence.</span>
+      </h1>
+
+      <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
+        A non-diagnostic community wellness platform built with a rigorous Object-Oriented Python core. Transforms self-reported sleep, movement, and hydration into explainable composite scores, rolling 3-day moving averages, and rule-based trend signals.
+      </p>
+
+      <!-- Primary Action Buttons -->
+      <div class="flex flex-wrap items-center gap-3 pt-2">
+        <a href="{{ url_for('login') }}" class="px-6 py-3 rounded-xl bg-gradient-to-r from-brand-600 via-brand-500 to-brand-400 hover:from-brand-500 hover:to-brand-300 text-white font-semibold text-sm shadow-xl shadow-brand-500/25 flex items-center gap-2 transition hover:scale-105">
+          <span>Sign In to HealthBridge</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+        <a href="{{ url_for('validation_lab') }}" class="px-5 py-3 rounded-xl bg-surface-800 hover:bg-surface-700 border border-slate-700 text-slate-200 hover:text-white font-medium text-sm flex items-center gap-2 transition">
+          <i data-lucide="flask-conical" class="w-4 h-4 text-accent-400"></i>
+          <span>Validation Lab</span>
+        </a>
+        <a href="{{ url_for('login') }}" class="px-5 py-3 rounded-xl bg-surface-800 hover:bg-surface-700 border border-slate-700 text-slate-300 hover:text-white font-medium text-sm transition">
+          Sign In
+        </a>
+      </div>
+
+      <!-- Trust Badges -->
+      <div class="pt-4 border-t border-slate-800/80 flex flex-wrap items-center gap-6 text-xs text-slate-400">
+        <div class="flex items-center gap-1.5">
+          <i data-lucide="check-circle-2" class="w-4 h-4 text-brand-400"></i>
+          <span>Strict OOP Encapsulation</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <i data-lucide="check-circle-2" class="w-4 h-4 text-accent-400"></i>
+          <span>Rule-Based Sliding Trends</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+          <span>Zero-Cost Accessible Habits</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Visual Preview Card -->
+    <div class="lg:col-span-5">
+      <div class="p-6 rounded-3xl bg-surface-850 border border-slate-800 shadow-2xl relative overflow-hidden group hover:border-brand-500/40 transition">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-brand-500/20 text-brand-400 flex items-center justify-center">
+              <i data-lucide="activity" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider">Live System Simulation</h3>
+              <p class="text-[11px] text-slate-400">Alex Rivera (Demo Profile) · Day 14 Snapshot</p>
+            </div>
+          </div>
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            Optimal Band
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div class="p-4 rounded-xl bg-surface-800 border border-slate-700/60">
+            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Composite Score</span>
+            <div class="text-2xl font-black text-brand-400 mt-1">82.4 <span class="text-xs font-normal text-slate-500">/ 100</span></div>
+            <span class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1 mt-1">
+              <i data-lucide="trending-up" class="w-3 h-3"></i> +14.2% Week-over-Week
+            </span>
+          </div>
+
+          <div class="p-4 rounded-xl bg-surface-800 border border-slate-700/60">
+            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">3-Day Trend Signal</span>
+            <div class="text-base font-bold text-white mt-1">Sustained Growth</div>
+            <span class="text-[11px] text-accent-400 font-medium flex items-center gap-1 mt-1">
+              <i data-lucide="check" class="w-3 h-3"></i> Delta > +10% Baseline
+            </span>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-brand-950/30 border border-brand-500/20 text-xs text-brand-200/90 leading-relaxed">
+          <strong class="text-brand-300 font-semibold">Explainable Recommendation:</strong>
+          Continue current 7.5h sleep schedule; physical activity consistency exceeded target by 18% over the last 3 days.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Instant Access & Platform Roles -->
+  <section class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-800 pb-4">
+      <div>
+        <span class="text-xs uppercase font-bold text-brand-400 tracking-wider">Instant Access &amp; Architecture</span>
+        <h2 class="text-2xl font-bold text-white tracking-tight">Evaluate HealthBridge Demonstration Features</h2>
+      </div>
+      <p class="text-xs text-slate-400">Explore pre-loaded safe data or log in with administrator credentials</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <!-- Card 1: Trial Demo Persona -->
+      <div class="p-5 rounded-2xl bg-surface-850 border border-slate-800 shadow-lg flex flex-col justify-between hover:border-amber-500/50 transition group">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">Trial Demo</span>
+            <i data-lucide="flask-conical" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Trial Demo Persona</h3>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            Pre-loaded with 14 days of realistic lifestyle records clearly tagged [Demo Data]. Safely explore moving averages, rule-based trends, and weekly report exports.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 2: Administrator Governance -->
+      <div class="p-5 rounded-2xl bg-surface-850 border border-slate-800 shadow-lg flex flex-col justify-between hover:border-cyan-500/50 transition group">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Administrator</span>
+            <i data-lucide="shield" class="w-4 h-4 text-cyan-400"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">System Governance</h3>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            Full role-based access control managed by administrators (Jivraj &amp; Vaibhav). Exclusively authorized to assign roles across Normal User, Manager, and Admin.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 3: Community Health Equity -->
+      <div class="p-5 rounded-2xl bg-surface-850 border border-slate-800 shadow-lg flex flex-col justify-between hover:border-emerald-500/50 transition group">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">SDG 3 &amp; 10</span>
+            <i data-lucide="heart-pulse" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Accessible Health Equity</h3>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            Designed for 100% barrier-free community participation. Tracks zero-cost habits (sleep regularity, neighborhood walks, tap water intake) without subscriptions.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- UN Sustainable Development Goals Alignment -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="p-6 rounded-3xl bg-surface-850 border border-slate-800 shadow-xl space-y-3">
+      <div class="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+        <i data-lucide="heart-pulse" class="w-5 h-5"></i>
+      </div>
+      <div class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+        UN SDG 3 · Target 3.4
+      </div>
+      <h3 class="text-lg font-bold text-white">Good Health and Well-Being</h3>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Supports self-awareness around non-communicable lifestyle risk factors (chronic sleep debt, sedentary routines, dehydration). Promotes personal daily reflection before clinical care is required.
+      </p>
+    </div>
+
+    <div class="p-6 rounded-3xl bg-surface-850 border border-slate-800 shadow-xl space-y-3">
+      <div class="h-10 w-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center">
+        <i data-lucide="users" class="w-5 h-5"></i>
+      </div>
+      <div class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 uppercase tracking-wider">
+        UN SDG 10 · Target 10.2
+      </div>
+      <h3 class="text-lg font-bold text-white">Reduced Inequalities</h3>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Ensures wellness tracking is 100% barrier-free. Focuses strictly on accessible, zero-cost lifestyle habits (neighborhood walking, tap water hydration, consistent sleep timing) rather than expensive wearables or commercial gym memberships.
+      </p>
+    </div>
+  </section>
+
+</div>
+{% endblock %}
