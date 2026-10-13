@@ -206,6 +206,7 @@ HealthBridge is an educational lifestyle tracking system. It **does not** provid
 - **Coding** - Jivraj & Vaibhav 
 - **Documentation** - Swarit & Yunay
 - **Presentation** - Venisha & Pradishan
+- **Demonstration** - Venisha
 
 ---
 *Built with ❤️ for HACK-AI-THON 2026 National Level Challenge.*
